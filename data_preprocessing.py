@@ -2,7 +2,13 @@ import numpy as np
 import pandas as pd
 import os
 
-def get_dataset_in_np(path, labels_available=False):
+def normalize_dataset(dataset):
+	min_value = np.amin(dataset)
+	max_value = np.amax(dataset)
+	dataset = (dataset - min_value) / (max_value - min_value)
+	return dataset
+
+def get_dataset_in_np(path, labels_available=False, normalize=True):
 	data = pd.read_json(path)
 	data_id = data.id.values
 	data_band_1 = data.band_1.values
@@ -19,6 +25,8 @@ def get_dataset_in_np(path, labels_available=False):
 		dataset_features.append(temp)
 
 	dataset_features = np.array(dataset_features)
+	if normalize:
+		dataset_features = normalize_dataset(dataset_features)
 
 	if labels_available:
 		dataset_labels = []

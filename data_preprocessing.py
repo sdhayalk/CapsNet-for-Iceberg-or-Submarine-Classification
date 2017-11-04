@@ -2,18 +2,19 @@ import numpy as np
 import pandas as pd
 import os
 
-def normalize_dataset(dataset):
+def normalize(dataset_train_features, dataset_test_features):
+	dataset = np.concatenate((dataset_train_features, dataset_test_features), axis=0)
 	min_value = np.amin(dataset)
 	max_value = np.amax(dataset)
-	dataset = (dataset - min_value) / (max_value - min_value)
-	return dataset
+	dataset_train_features = (dataset_train_features - min_value) / (max_value - min_value)
+	dataset_test_features = (dataset_test_features - min_value) / (max_value - min_value)
+	return dataset_train_features, dataset_test_features
 
-def get_dataset_in_np(path, labels_available=False, normalize=True):
+def get_dataset_in_np(path, labels_available=False):
 	data = pd.read_json(path)
 	data_id = data.id.values
 	data_band_1 = data.band_1.values
 	data_band_2 = data.band_2.values
-	data_label = data.is_iceberg.values
 
 	dataset_features = []
 	for i in range(0, data_band_1.shape[0]):
@@ -25,10 +26,9 @@ def get_dataset_in_np(path, labels_available=False, normalize=True):
 		dataset_features.append(temp)
 
 	dataset_features = np.array(dataset_features)
-	if normalize:
-		dataset_features = normalize_dataset(dataset_features)
 
 	if labels_available:
+		data_label = data.is_iceberg.values
 		dataset_labels = []
 		
 		for i in range(0, data_band_1.shape[0]):

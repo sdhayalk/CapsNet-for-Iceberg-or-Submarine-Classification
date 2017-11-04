@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 
-def get_dataset_features(path, labels_available=False):
+def get_dataset_in_np(path, labels_available=False):
 	data = pd.read_json(path)
 	data_id = data.id.values
 	data_band_1 = data.band_1.values
